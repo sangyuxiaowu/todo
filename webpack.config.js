@@ -3,6 +3,12 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HTMLPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
+const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+//使用UglifyJsPlugin及OptimizeCSSPlugin插件来 压缩JS及CSS文件
+//当然如果你只是想简单的压缩，而不做任何配置的话
+//可以按照官方文档中给出的方法使用optimization.minimizer: true
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 //视频使用extract-text-webpack-plugin来提取CSS文件
 //不过在webpack 4.x中则应该使用mini-css-extract-plugin来提取CSS到单独文件中
@@ -26,7 +32,11 @@ const config = {
                 NODE_ENV:isDev?'"development"':'"production"'
             }
         }),
-        new HTMLPlugin(),
+        new HTMLPlugin({
+            title:"mytodo",//网页标题
+            filename: "index.html",
+            favicon: ''
+        }),
     ],
     module:{ // 配置加载资源
         rules:[ // 规则
@@ -131,17 +141,60 @@ if(isDev){
         ]
     });
     config.plugins.push(
-        new MiniCssExtractPlugin('styles.[contenthash:7].css')
+        new MiniCssExtractPlugin({
+            //filename: "css/[name].[chunkhash:8].css"
+            filename: "[name].[chunkhash:8].css"
+        })
 
-        // // 将类库文件单独打包出来
-        // new webpack.optimize.CommonsChunkPlugin({
-        //     name: 'vendor'
-        // })
-
-        // webpack相关的代码单独打包
-        // new webpack.optimize.CommonsChunkPlugin({
-        //     name: 'runtime'
-        // })
+        
     );
+    //https://juejin.im/post/5af1677c6fb9a07ab508dabb
+    //将类库文件单独打包出来
+    config.optimization = {
+        splitChunks: {
+            chunks: 'async',
+            // 大于30KB才单独分离成chunk
+            minSize: 30000,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            name: true,
+            cacheGroups: {
+                default: {
+                    priority: -20,
+                    reuseExistingChunk: true,
+                },
+                vendors: {
+                    name: 'vendors',
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10,
+                    chunks: "all"
+                },
+                
+                echarts: {
+                    name: 'echarts',
+                    chunks: 'all',
+                    // 对echarts进行单独优化，优先级较高
+                    priority: 20,
+                    test: function(module){
+                        var context = module.context;
+                        return context && (context.indexOf('echarts') >= 0 || context.indexOf('zrender') >= 0)
+                    }
+                }
+            }
+        }
+        //单独打包 runtimeChunk
+        ,runtimeChunk:{name: "manifest"}
+        // 压缩代码
+        ,minimizer: [
+            // js mini
+            new UglifyJsPlugin({
+              cache: true,
+              parallel: true,
+              sourceMap: false // set to true if you want JS source maps
+            }),
+            // css mini
+            new OptimizeCSSPlugin({})
+        ]
+    }
 }
 module.exports = config
