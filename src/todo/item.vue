@@ -11,7 +11,9 @@
 
 <script>
 export default {
+    // 父子组件间传值
     props:{
+        // 接收父组件todo.vue传过来的todo对象
         todo:{
             type:Object,
             required:true,
@@ -19,6 +21,8 @@ export default {
     },
     methods:{
         deleteTodo(){
+            // this.$emit 触发del事件，并返回todo.id
+            // 往父组件传递 del 方法
             this.$emit('del',this.todo.id)
         }
     }

@@ -1,6 +1,6 @@
 /*
 * index.js
-* 项目入口文件
+* 项目的入口文件
 * */
 import Vue from 'vue'
 import App from './app.vue'

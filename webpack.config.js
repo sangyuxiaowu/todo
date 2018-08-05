@@ -18,7 +18,7 @@ const isDev = process.env.NODE_ENV=='development'
 
 const config = {
     target:'web',
-    entry:path.join(__dirname,'src/index.js'),
+    entry:path.join(__dirname,'src/index.js'),// 输入：项目主文件（入口文件）
     output:{
         // 输出
         filename:'bundle.[hash:8].js',// 输出的文件名
@@ -152,22 +152,22 @@ if(isDev){
     //将类库文件单独打包出来
     config.optimization = {
         splitChunks: {
-            chunks: 'async',
+            chunks: 'async',// 必须三选一： "initial" | "all" | "async"(默认就是异步)
             // 大于30KB才单独分离成chunk
             minSize: 30000,
             maxAsyncRequests: 5,
-            maxInitialRequests: 3,
+            maxInitialRequests: 3,// 最大初始化请求书，默认1
             name: true,
-            cacheGroups: {
+            cacheGroups: {//设置缓存的 chunks
                 default: {
                     priority: -20,
                     reuseExistingChunk: true,
                 },
                 vendors: {
-                    name: 'vendors',
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
-                    chunks: "all"
+                    name: 'vendors',    // 要缓存的 分隔出来的 chunk 名称
+                    test: /[\\/]node_modules[\\/]/, //正则规则验证 符合就提取 chunk
+                    priority: -10,      // 缓存组优先级
+                    chunks: "all"       // 必须三选一： "initial" | "all" | "async"(默认就是异步)
                 },
                 
                 echarts: {

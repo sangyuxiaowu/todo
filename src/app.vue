@@ -15,6 +15,7 @@ import Footer from './todo/footer.jsx'
 import Todo from './todo/todo.vue'
 
 export default {
+    // 声明组件，之后便可以使用组件标签
     components:{
         Header,
         Footer,
