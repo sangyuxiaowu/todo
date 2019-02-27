@@ -40,7 +40,7 @@
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
     "webpack-command": "^0.4.1",
-    "webpack-dev-server": "^3.1.5"
+    "webpack-dev-server": "^3.2.1"
   },
   "devDependencies": {
     "extract-text-webpack-plugin": "^4.0.0-beta.0"
